@@ -36,13 +36,13 @@ cat > /etc/wireguard/client.conf <<-EOF
 [Interface]
 PrivateKey = $c1
 Address = 10.0.0.2/24 
-PreUp = start D:\software\TunSafe\bat\start.bat
+PreUp = start D:\soft\TunSafe\bat\start.bat
 PreUp = ping -n 4 127.1 >nul
-PostUp = start D:\software\TunSafe\bat\routes-up.bat
-PostDown = start D:\software\TunSafe\bat\routes-down.bat
-PostDown = start D:\software\TunSafe\bat\stop.bat
+PostUp = start D:\soft\TunSafe\bat\routes-up.bat
+PostDown = start D:\soft\TunSafe\bat\routes-down.bat
+PostDown = start D:\soft\TunSafe\bat\stop.bat
 DNS = 8.8.8.8
-MTU = 1420
+MTU = 1300
 [Peer]
 PublicKey = $s2
 Endpoint = 127.0.0.1:2099
@@ -90,8 +90,8 @@ wireguard_install(){
     echo "net.ipv4.ip_forward = 1" > /etc/sysctl.conf
     mkdir /etc/udp
     cd /etc/udp
-	curl -o udp2raw https://raw.githubusercontent.com/lmc999/OpenvpnForGames/master/udp2raw
-	curl -o speederv2 https://raw.githubusercontent.com/lmc999/OpenvpnForGames/master/speederv2
+	curl -o udp2raw https://raw.githubusercontent.com/meneoce/games/main/ForGame/udp2raw
+	curl -o speederv2 https://raw.githubusercontent.com/meneoce/games/main/ForGame/speederv2
 	chmod +x speederv2 udp2raw
 	
 	cat > /etc/wireguard/wg0.conf <<-EOF
@@ -102,7 +102,7 @@ PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j A
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $NIC -j MASQUERADE
 ListenPort = 1195
 DNS = 8.8.8.8
-MTU = 1420
+MTU = 1300
 [Peer]
 PublicKey = $c2
 AllowedIPs = 10.0.0.2/32
@@ -116,16 +116,16 @@ EOF
 # Configure auto start on boot
 auto_start(){
     echo -e "${Green}正在配置加速程序开机自启${Font}"
-    nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 2 >speeder.log 2>&1 &
+    nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 0 >speeder.log 2>&1 &
 	nohup ./udp2raw -s -l0.0.0.0:9898 -r 127.0.0.1:9999  --raw-mode faketcp  -a -k passwd >udp2raw.log 2>&1 &
     if [ "${OS}" == 'CentOS' ];then
         sed -i '/exit/d' /etc/rc.d/rc.local
-        echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 2 >speeder.log 2>&1 &
+        echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 0 >speeder.log 2>&1 &
 nohup ./udp2raw -s -l0.0.0.0:9898 -r 127.0.0.1:9999  --raw-mode faketcp  -a -k passwd >udp2raw.log 2>&1 & " >> /etc/rc.d/rc.local
         chmod +x /etc/rc.d/rc.local
     elif [ -s /etc/rc.local ]; then
         sed -i '/exit/d' /etc/rc.local
-        echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 2 >speeder.log 2>&1 &
+        echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 0 >speeder.log 2>&1 &
 nohup ./udp2raw -s -l0.0.0.0:9898 -r 127.0.0.1:9999  --raw-mode faketcp  -a -k passwd >udp2raw.log 2>&1 & " >> /etc/rc.local
         chmod +x /etc/rc.local
     else
@@ -158,7 +158,7 @@ echo "#!/bin/sh -e
 #
 # By default this script does nothing.
 " > /etc/rc.local
-echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 2 >speeder.log 2>&1 &
+echo "nohup ./speederv2 -s -l0.0.0.0:9999 -r127.0.0.1:1195 -f2:4 --mode 0 --timeout 0 >speeder.log 2>&1 &
 nohup ./udp2raw -s -l0.0.0.0:9898 -r 127.0.0.1:9999  --raw-mode faketcp  -a -k passwd >udp2raw.log 2>&1 & " >> /etc/rc.local
 chmod +x /etc/rc.local
 systemctl enable rc-local >/dev/null 2>&1
