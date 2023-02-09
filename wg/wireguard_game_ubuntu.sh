@@ -51,7 +51,7 @@ PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j A
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $eth -j MASQUERADE
 ListenPort = $port
 DNS = 8.8.8.8
-MTU = 1420
+MTU = 1300
 
 [Peer]
 PublicKey = $c2
@@ -112,7 +112,7 @@ PostUp = mshta vbscript:CreateObject("WScript.Shell").Run("cmd /c route add $ser
 PostDown = route delete $serverip && taskkill /im udp2raw.exe /f && taskkill /im speederv2.exe /f
 Address = 10.0.0.2/24 
 DNS = 8.8.8.8
-MTU = 1420
+MTU = 1300
 
 [Peer]
 PublicKey = $s2
@@ -126,7 +126,7 @@ cat > /etc/wireguard/client/client_noudp.conf <<-EOF
 PrivateKey = $c1
 Address = 10.0.0.2/24 
 DNS = 8.8.8.8
-MTU = 1420
+MTU = 1300
 [Peer]
 PublicKey = $s2
 Endpoint = $serverip:$port
